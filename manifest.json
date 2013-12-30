@@ -2,8 +2,7 @@
     "name": "Poche",
     "id": "poche",
     "description": {
-        "en": "Create a beautiful blog or website easily",
-        "fr": "Logiciel de création de blog ou de site Web"
+        "en": "a self hostable read-it-later app"
     },
     "developer": {
         "name": "beudbeud",
@@ -16,24 +15,17 @@
             {
                 "name": "domain",
                 "ask": {
-                    "en": "Choose a domain for Wordpress"
+                    "en": "Choose a domain for Poche"
                 },
                 "example": "domain.org"
             },
             {
                 "name": "path",
                 "ask": {
-                    "en": "Choose a path for Wordpress"
+                    "en": "Choose a path for Poche"
                 },
                 "example": "/poche",
                 "default": "/poche"
-            },
-            {
-                "name": "admin",
-                "ask": {
-                    "en": "Choose the Wordpress administrator (must be an existing YunoHost user)"
-                },
-                "example": "homer"
             }
         ]
     }
