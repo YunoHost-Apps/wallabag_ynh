@@ -1,0 +1,42 @@
+{
+    "name": "Poche",
+    "id": "poche",
+    "description": {
+        "en": "Create a beautiful blog or website easily",
+        "fr": "Logiciel de création de blog ou de site Web"
+    },
+    "developer": {
+        "name": "beudbeud",
+        "email": "beudbeud@beudibox.fr",
+        "url": "http://www.inthepoche.com/"
+    },
+    "multi_instance": "true",
+    "arguments": {
+        "install" : [
+            {
+                "name": "domain",
+                "ask": {
+                    "en": "Choose a domain for Wordpress"
+                },
+                "example": "domain.org"
+            },
+            {
+                "name": "path",
+                "ask": {
+                    "en": "Choose a path for Wordpress"
+                },
+                "example": "/poche",
+                "default": "/poche"
+            },
+            {
+                "name": "admin",
+                "ask": {
+                    "en": "Choose the Wordpress administrator (must be an existing YunoHost user)"
+                },
+                "example": "homer"
+            }
+        ]
+    }
+}
+
+
