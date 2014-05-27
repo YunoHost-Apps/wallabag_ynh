@@ -5,5 +5,13 @@ db_name=wallabag
 root_pwd=$(sudo cat /etc/yunohost/mysql)
 passwd="64faf5d0b1dc311fd0f94af64f6c296a03045571"
 user=$1
+mysql -u root -p$root_pwd $db_name -e "select MAX(id) from users INTO OUTFILE '/tmp/useridwallabag';"
+id=$(cat /tmp/useridwallabag)
 
 mysql -u root -p$root_pwd $db_name -e "insert into users (id,username,password,name,email) values ('','$user','$passwd','$user','');"
+mysql -u root -p$root_pwd $db_name -e "insert into users_config (id,user_id,name,value) values ('','$id','pager','10');"
+mysql -u root -p$root_pwd $db_name -e "insert into users_config (id,user_id,name,value) values ('','$id','language','en_EN.utf8');"
+mysql -u root -p$root_pwd $db_name -e "insert into users_config (id,user_id,name,value) values ('','$id','theme','baggy');"
+
+rm /tmp/useridwallabag
+
