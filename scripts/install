@@ -48,7 +48,7 @@ wallabag_users=$(ldapsearch -h localhost -b ou=users,dc=yunohost,dc=org -x objec
 passwd="64faf5d0b1dc311fd0f94af64f6c296a03045571"
 for walluser in $wallabag_users
 do
-    mysql -u $db_user -p$root_pwd $db_user -e "insert into users (id,username,password,name,email) values ('','$walluser','$passwd','$walluser','');"
+    mysql -u $db_user -p$db_pwd $db_user -e "insert into users (id,username,password,name,email) values ('','$walluser','$passwd','$walluser','');"
 done
 
 
