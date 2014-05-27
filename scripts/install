@@ -53,7 +53,7 @@ do
     mysql -u $db_user -p$db_pwd $db_user -e "insert into users_config (id,user_id,name,value) values ('','$id','pager','10');"
     mysql -u $db_user -p$db_pwd $db_user -e "insert into users_config (id,user_id,name,value) values ('','$id','language','en_EN.utf8');"
     mysql -u $db_user -p$db_pwd $db_user -e "insert into users_config (id,user_id,name,value) values ('','$id','theme','baggy');"
-    id=$id+1
+    ((id++)) 
 done
 
 
