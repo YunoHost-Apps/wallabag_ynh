@@ -35,7 +35,7 @@ sudo sed -i "s/yunouser/$db_user/g" $final_path/inc/poche/config.inc.php
 sudo sed -i "s/yunopass/$db_pwd/g" $final_path/inc/poche/config.inc.php
 sudo sed -i "s/yunobase/$db_user/g" $final_path/inc/poche/config.inc.php
 j=$(dd if=/dev/urandom bs=1 count=200 2> /dev/null | tr -c -d '[A-Za-z0-9]' | sed -n 's/\(.\{40\}\).*/\1/p')
-sudo sed -i "s/KEY1/$j/g" $final_path/
+sudo sed -i "s/KEY1/$j/g" $final_path/inc/poche/config.inc.php
 sudo rm -Rf $final_path/install
 
 # Modify Nginx configuration file and copy it to Nginx conf directory
