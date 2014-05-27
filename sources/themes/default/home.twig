@@ -12,23 +12,34 @@
 {% include '_menu.twig' %}
 {% endblock %}
 {% block precontent %}
-            {% if entries|length > 1 %}
-            <ul id="sort">
-                <li><a href="./?sort=ia&amp;view={{ view }}"><img src="{{ poche_url }}/themes/{{ theme }}/img/{{ theme }}/top.png" alt="{% trans "by date asc" %}" title="{% trans "by date asc" %}" /></a> {% trans "by date" %} <a href="./?sort=id&amp;view={{ view }}"><img src="{{ poche_url }}/themes/{{ theme }}/img/{{ theme }}/down.png" alt="{% trans "by date desc" %}" title="{% trans "by date desc" %}" /></a></li>
-                <li><a href="./?sort=ta&amp;view={{ view }}"><img src="{{ poche_url }}/themes/{{ theme }}/img/{{ theme }}/top.png" alt="{% trans "by title asc" %}" title="{% trans "by title asc" %}" /></a> {% trans "by title" %} <a href="./?sort=td&amp;view={{ view }}"><img src="{{ poche_url }}/themes/{{ theme }}/img/{{ theme }}/down.png" alt="{% trans "by title desc" %}" title="{% trans "by title desc" %}" /></a></li>
-            </ul>
-            {% endif %}
+
+{% include '_sorting.twig' %}
 {% endblock %}
 {% block content %}
+
+						{% if includeImport %}
+								{% include '_import.twig' %}
+						{% endif %}
+
+            {% if tag %}
+                <h3>{% trans "Tag" %}: <b>{{ tag.value }}</b></h3>
+            {% endif %}
+
             {% if entries is empty %}
             <div class="messages warning"><p>{% trans "No articles found." %}</p></div>
             {% else %}
                 {% block pager %}
                     {% if nb_results > 1 %}
                 <div class="results">
-                    <div class="nb-results">{{ nb_results }} {% trans "results" %}</div>
+                    <div class="nb-results">{{ nb_results }} {% trans "results" %}{% if search_term is defined %}{% trans " found for « " %} {{ search_term }} »{% endif %}</div>
                         {{ page_links | raw }}
                 </div>
+                    {% elseif nb_results == 1 %}
+                        {% if search_term is defined %}
+                     <div class="results">
+                        <div class="nb-results">{% trans "Only one result found for " %} « {{ search_term }} »</div>
+                     </div>
+                        {% endif %}
                     {% endif %}
                 {% endblock %}
                 {% for entry in entries %}
@@ -46,4 +57,5 @@
                 {% endfor %}
             {% endif %}
             {{ block('pager') }}
+            {% if view == 'home' %}{% if nb_results > 1 %}<a title="{% trans "mark all the entries as read" %}"  href="./?action=archive_all">{% trans "mark all the entries as read" %}</a>{% endif %}{% endif %}
 {% endblock %}

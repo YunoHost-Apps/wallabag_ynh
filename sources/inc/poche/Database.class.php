@@ -1,15 +1,22 @@
 <?php
 /**
- * poche, a read it later open source system
+ * wallabag, self hostable application allowing you to not miss any content anymore
  *
- * @category   poche
- * @author     Nicolas Lœuillet <support@inthepoche.com>
+ * @category   wallabag
+ * @author     Nicolas Lœuillet <nicolas@loeuillet.org>
  * @copyright  2013
  * @license    http://www.wtfpl.net/ see COPYING file
  */
 
 class Database {
     var $handle;
+    private $order = array(
+      'ia' => 'ORDER BY entries.id',
+      'id' => 'ORDER BY entries.id DESC',
+      'ta' => 'ORDER BY lower(entries.title)',
+      'td' => 'ORDER BY lower(entries.title) DESC',
+      'default' => 'ORDER BY entries.id'
+    );
 
     function __construct()
     {
@@ -20,11 +27,11 @@ class Database {
                 break;
             case 'mysql':
                 $db_path = 'mysql:host=' . STORAGE_SERVER . ';dbname=' . STORAGE_DB;
-                $this->handle = new PDO($db_path, STORAGE_USER, STORAGE_PASSWORD); 
+                $this->handle = new PDO($db_path, STORAGE_USER, STORAGE_PASSWORD);
                 break;
             case 'postgres':
                 $db_path = 'pgsql:host=' . STORAGE_SERVER . ';dbname=' . STORAGE_DB;
-                $this->handle = new PDO($db_path, STORAGE_USER, STORAGE_PASSWORD); 
+                $this->handle = new PDO($db_path, STORAGE_USER, STORAGE_PASSWORD);
                 break;
         }
 
@@ -44,7 +51,7 @@ class Database {
         }
         $hasAdmin = count($query->fetchAll());
 
-        if ($hasAdmin == 0) 
+        if ($hasAdmin == 0)
             return false;
 
         return true;
@@ -70,7 +77,7 @@ class Database {
         }
         else {
             $sql = '
-                CREATE TABLE tags (
+                CREATE TABLE IF NOT EXISTS tags (
                   id bigserial primary key,
                   value varchar(255) NOT NULL
                 );
@@ -81,7 +88,7 @@ class Database {
 
         if (STORAGE == 'sqlite') {
             $sql = '
-                CREATE TABLE tags_entries (
+                CREATE TABLE IF NOT EXISTS tags_entries (
                     id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL UNIQUE,
                     entry_id INTEGER,
                     tag_id INTEGER,
@@ -103,7 +110,7 @@ class Database {
         }
         else {
             $sql = '
-                CREATE TABLE tags_entries (
+                CREATE TABLE IF NOT EXISTS tags_entries (
                   id bigserial primary key,
                   entry_id integer NOT NULL,
                   tag_id integer NOT NULL
@@ -133,7 +140,7 @@ class Database {
         $sql = 'INSERT INTO users_config ( user_id, name, value ) VALUES (?, ?, ?)';
         $params = array($id_user, 'language', LANG);
         $query = $this->executeQuery($sql, $params);
-        
+
         $sql = 'INSERT INTO users_config ( user_id, name, value ) VALUES (?, ?, ?)';
         $params = array($id_user, 'theme', DEFAULT_THEME);
         $query = $this->executeQuery($sql, $params);
@@ -146,7 +153,7 @@ class Database {
         $query = $this->executeQuery($sql, array($id));
         $result = $query->fetchAll();
         $user_config = array();
-        
+
         foreach ($result as $key => $value) {
             $user_config[$value['name']] = $value['value'];
         }
@@ -165,9 +172,14 @@ class Database {
         }
     }
 
-    public function login($username, $password) {
-        $sql = "SELECT * FROM users WHERE username=? AND password=?";
-        $query = $this->executeQuery($sql, array($username, $password));
+    public function login($username, $password, $isauthenticated=false) {
+        if ($isauthenticated) {
+          $sql = "SELECT * FROM users WHERE username=?";
+          $query = $this->executeQuery($sql, array($username));
+        } else {
+          $sql = "SELECT * FROM users WHERE username=? AND password=?";
+          $query = $this->executeQuery($sql, array($username, $password));
+        }
         $login = $query->fetchAll();
 
         $user = array();
@@ -189,11 +201,11 @@ class Database {
         $params_update = array($password, $userId);
         $query = $this->executeQuery($sql_update, $params_update);
     }
-    
+
     public function updateUserConfig($userId, $key, $value) {
         $config = $this->getConfigUser($userId);
-        
-        if (!isset ($user_config[$key])) {
+
+        if (! isset($config[$key])) {
             $sql = "INSERT INTO users_config (value, user_id, name) VALUES (?, ?, ?)";
         }
         else {
@@ -218,6 +230,36 @@ class Database {
         }
     }
 
+    public function updateContentAndTitle($id, $title, $body, $user_id) {
+        $sql_action = 'UPDATE entries SET content = ?, title = ? WHERE id=? AND user_id=?';
+        $params_action = array($body, $title, $id, $user_id);
+        $query = $this->executeQuery($sql_action, $params_action);
+
+        return $query;
+    }
+
+    public function retrieveUnfetchedEntries($user_id, $limit) {
+
+        $sql_limit = "LIMIT 0,".$limit;
+        if (STORAGE == 'postgres') {
+            $sql_limit = "LIMIT ".$limit." OFFSET 0";
+        }
+
+        $sql        = "SELECT * FROM entries WHERE (content = '' OR content IS NULL) AND title LIKE 'Untitled - Import%' AND user_id=? ORDER BY id " . $sql_limit;
+        $query      = $this->executeQuery($sql, array($user_id));
+        $entries    = $query->fetchAll();
+
+        return $entries;
+    }
+
+    public function retrieveUnfetchedEntriesCount($user_id) {
+      $sql        = "SELECT count(*) FROM entries WHERE (content = '' OR content IS NULL) AND title LIKE 'Untitled - Import%' AND user_id=?";
+      $query      = $this->executeQuery($sql, array($user_id));
+      list($count) = $query->fetch();
+
+      return $count;
+    }
+
     public function retrieveAll($user_id) {
         $sql        = "SELECT * FROM entries WHERE user_id=? ORDER BY id";
         $query      = $this->executeQuery($sql, array($user_id));
@@ -236,48 +278,78 @@ class Database {
         return isset($entry[0]) ? $entry[0] : null;
     }
 
-    public function getEntriesByView($view, $user_id, $limit = '') {
-        switch ($_SESSION['sort'])
-        {
-            case 'ia':
-                $order = 'ORDER BY id';
-                break;
-            case 'id':
-                $order = 'ORDER BY id DESC';
-                break;
-            case 'ta':
-                $order = 'ORDER BY lower(title)';
-                break;
-            case 'td':
-                $order = 'ORDER BY lower(title) DESC';
-                break;
-            default:
-                $order = 'ORDER BY id';
-                break;
-        }
+    public function retrieveOneByURL($url, $user_id) {
+        $entry  = NULL;
+        $sql    = "SELECT * FROM entries WHERE url=? AND user_id=?";
+        $params = array($url, $user_id);
+        $query  = $this->executeQuery($sql, $params);
+        $entry  = $query->fetchAll();
 
-        switch ($view)
-        {
+        return isset($entry[0]) ? $entry[0] : null;
+    }
+
+    public function reassignTags($old_entry_id, $new_entry_id) {
+        $sql    = "UPDATE tags_entries SET entry_id=? WHERE entry_id=?";
+        $params = array($new_entry_id, $old_entry_id);
+        $query  = $this->executeQuery($sql, $params);
+    }
+
+    public function getEntriesByView($view, $user_id, $limit = '', $tag_id = 0) {
+        switch ($view) {
             case 'archive':
-                $sql    = "SELECT * FROM entries WHERE user_id=? AND is_read=? " . $order;
+                $sql    = "SELECT * FROM entries WHERE user_id=? AND is_read=? ";
                 $params = array($user_id, 1);
                 break;
             case 'fav' :
-                $sql    = "SELECT * FROM entries WHERE user_id=? AND is_fav=? " . $order;
+                $sql    = "SELECT * FROM entries WHERE user_id=? AND is_fav=? ";
                 $params = array($user_id, 1);
                 break;
+            case 'tag' :
+                $sql    = "SELECT entries.* FROM entries
+                LEFT JOIN tags_entries ON tags_entries.entry_id=entries.id
+                WHERE entries.user_id=? AND tags_entries.tag_id = ? ";
+                $params = array($user_id, $tag_id);
+                break;
             default:
-                $sql    = "SELECT * FROM entries WHERE user_id=? AND is_read=? " . $order;
+                $sql    = "SELECT * FROM entries WHERE user_id=? AND is_read=? ";
                 $params = array($user_id, 0);
                 break;
         }
 
-        $sql .= ' ' . $limit;
+                $sql .= $this->getEntriesOrder().' ' . $limit;
+
+                $query = $this->executeQuery($sql, $params);
+                $entries = $query->fetchAll();
+
+                return $entries;
+        }
+
+    public function getEntriesByViewCount($view, $user_id, $tag_id = 0) {
+        switch ($view) {
+            case 'archive':
+                    $sql    = "SELECT count(*) FROM entries WHERE user_id=? AND is_read=? ";
+                $params = array($user_id, 1);
+                break;
+            case 'fav' :
+                    $sql    = "SELECT count(*) FROM entries WHERE user_id=? AND is_fav=? ";
+                $params = array($user_id, 1);
+                break;
+            case 'tag' :
+                $sql    = "SELECT count(*) FROM entries
+                    LEFT JOIN tags_entries ON tags_entries.entry_id=entries.id
+                    WHERE entries.user_id=? AND tags_entries.tag_id = ? ";
+                $params = array($user_id, $tag_id);
+                break;
+            default:
+                $sql    = "SELECT count(*) FROM entries WHERE user_id=? AND is_read=? ";
+                $params = array($user_id, 0);
+                break;
+        }
 
         $query = $this->executeQuery($sql, $params);
-        $entries = $query->fetchAll();
+        list($count) = $query->fetch();
 
-        return $entries;
+        return $count;
     }
 
     public function updateContent($id, $content, $user_id) {
@@ -287,11 +359,24 @@ class Database {
         return $query;
     }
 
-    public function add($url, $title, $content, $user_id) {
-        $sql_action = 'INSERT INTO entries ( url, title, content, user_id ) VALUES (?, ?, ?, ?)';
-        $params_action = array($url, $title, $content, $user_id);
-        $query = $this->executeQuery($sql_action, $params_action);
-        return $query;
+    /**
+     *
+     * @param string $url
+     * @param string $title
+     * @param string $content
+     * @param integer $user_id
+     * @return integer $id of inserted record
+     */
+    public function add($url, $title, $content, $user_id, $isFavorite=0, $isRead=0) {
+        $sql_action = 'INSERT INTO entries ( url, title, content, user_id, is_fav, is_read ) VALUES (?, ?, ?, ?, ?, ?)';
+        $params_action = array($url, $title, $content, $user_id, $isFavorite, $isRead);
+        if ( !$this->executeQuery($sql_action, $params_action) ) {
+          $id = null;
+        }
+        else {
+          $id = intval($this->getLastId( (STORAGE == 'postgres') ? 'entries_id_seq' : '') );
+        }
+        return $id;
     }
 
     public function deleteById($id, $user_id) {
@@ -313,42 +398,66 @@ class Database {
         $query          = $this->executeQuery($sql_action, $params_action);
     }
 
+    public function archiveAll($user_id) {
+        $sql_action     = "UPDATE entries SET is_read=? WHERE user_id=? AND is_read=?";
+        $params_action  = array($user_id, 1, 0);
+        $query          = $this->executeQuery($sql_action, $params_action);
+    }
+
     public function getLastId($column = '') {
         return $this->getHandle()->lastInsertId($column);
     }
 
-    public function retrieveAllTags() {
-        $sql = "SELECT * FROM tags";
-        $query = $this->executeQuery($sql, array());
+    public function search($term, $user_id, $limit = '') {
+        $search = '%'.$term.'%';
+        $sql_action = "SELECT * FROM entries WHERE user_id=? AND (content LIKE ? OR title LIKE ? OR url LIKE ?) "; //searches in content, title and URL
+        $sql_action .= $this->getEntriesOrder().' ' . $limit;
+        $params_action = array($user_id, $search, $search, $search);
+        $query = $this->executeQuery($sql_action, $params_action);
+        return $query->fetchAll();
+  	}
+
+    public function retrieveAllTags($user_id, $term = null) {
+        $sql = "SELECT DISTINCT tags.*, count(entries.id) AS entriescount FROM tags
+          LEFT JOIN tags_entries ON tags_entries.tag_id=tags.id
+          LEFT JOIN entries ON tags_entries.entry_id=entries.id
+          WHERE entries.user_id=?
+            ". (($term) ? "AND lower(tags.value) LIKE ?" : '') ."
+          GROUP BY tags.id, tags.value
+          ORDER BY tags.value";
+        $query = $this->executeQuery($sql, (($term)? array($user_id, strtolower('%'.$term.'%')) : array($user_id) ));
         $tags = $query->fetchAll();
 
         return $tags;
     }
 
-    public function retrieveTag($id) {
+    public function retrieveTag($id, $user_id) {
         $tag  = NULL;
-        $sql    = "SELECT * FROM tags WHERE id=?";
-        $params = array(intval($id));
+        $sql    = "SELECT DISTINCT tags.* FROM tags
+          LEFT JOIN tags_entries ON tags_entries.tag_id=tags.id
+          LEFT JOIN entries ON tags_entries.entry_id=entries.id
+          WHERE tags.id=? AND entries.user_id=?";
+        $params = array(intval($id), $user_id);
         $query  = $this->executeQuery($sql, $params);
         $tag  = $query->fetchAll();
 
         return isset($tag[0]) ? $tag[0] : null;
     }
 
-    public function retrieveEntriesByTag($tag_id) {
-        $sql = 
-            "SELECT * FROM entries
+    public function retrieveEntriesByTag($tag_id, $user_id) {
+        $sql =
+            "SELECT entries.* FROM entries
             LEFT JOIN tags_entries ON tags_entries.entry_id=entries.id
-            WHERE tags_entries.tag_id = ?";
-        $query = $this->executeQuery($sql, array($tag_id));
+            WHERE tags_entries.tag_id = ? AND entries.user_id=?";
+        $query = $this->executeQuery($sql, array($tag_id, $user_id));
         $entries = $query->fetchAll();
 
         return $entries;
     }
 
     public function retrieveTagsByEntry($entry_id) {
-        $sql = 
-            "SELECT * FROM tags
+        $sql =
+            "SELECT tags.* FROM tags
             LEFT JOIN tags_entries ON tags_entries.tag_id=tags.id
             WHERE tags_entries.entry_id = ?";
         $query = $this->executeQuery($sql, array($entry_id));
@@ -387,4 +496,14 @@ class Database {
         $query = $this->executeQuery($sql_action, $params_action);
         return $query;
     }
+
+        private function getEntriesOrder() {
+            if (isset($_SESSION['sort']) and array_key_exists($_SESSION['sort'], $this->order)) {
+                return $this->order[$_SESSION['sort']];
+            }
+            else {
+                return $this->order['default'];
+            }
+        }
+
 }

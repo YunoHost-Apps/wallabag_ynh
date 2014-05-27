@@ -1,16 +1,20 @@
 <?php
 /**
- * poche, a read it later open source system
+ * wallabag, self hostable application allowing you to not miss any content anymore
  *
- * @category   poche
- * @author     Nicolas Lœuillet <support@inthepoche.com>
+ * @category   wallabag
+ * @author     Nicolas Lœuillet <nicolas@loeuillet.org>
  * @copyright  2013
  * @license    http://www.wtfpl.net/ see COPYING file
  */
 
-define ('POCHE', '1.3.0');
+define ('POCHE', '1.6.1');
+require 'check_setup.php';
 require_once 'inc/poche/global.inc.php';
-session_start(); 
+
+# Start session
+Session::$sessionName = 'poche';
+Session::init();
 
 # Start Poche
 $poche = new Poche();
@@ -29,14 +33,14 @@ $tpl_vars = array(
     'referer' => $referer,
     'view' => $view,
     'poche_url' => Tools::getPocheUrl(),
-    'title' => _('poche, a read it later open source system'),
+    'title' => _('wallabag, a read it later open source system'),
     'token' => Session::getToken(),
     'theme' => $poche->getTheme()
 );
 
 if (! empty($notInstalledMessage)) {
     if (! Poche::$canRenderTemplates || ! Poche::$configFileAvailable) {
-        # We cannot use Twig to display the error message 
+        # We cannot use Twig to display the error message
         echo '<h1>Errors</h1><ol>';
         foreach ($notInstalledMessage as $message) {
             echo '<li>' . $message . '</li>';
@@ -63,15 +67,20 @@ if (isset($_GET['login'])) {
     # Update password
     $poche->updatePassword();
 } elseif (isset($_GET['import'])) {
-    $import = $poche->import($_GET['from']);
+    $import = $poche->import();
+    $tpl_vars = array_merge($tpl_vars, $import);
 } elseif (isset($_GET['download'])) {
-    Tools::download_db();;
+    Tools::download_db();
+} elseif (isset($_GET['empty-cache'])) {
+    $poche->emptyCache();
 } elseif (isset($_GET['export'])) {
     $poche->export();
 } elseif (isset($_GET['updatetheme'])) {
     $poche->updateTheme();
 } elseif (isset($_GET['updatelanguage'])) {
     $poche->updateLanguage();
+} elseif (isset($_GET['uploadfile'])) {
+    $poche->uploadFile();
 } elseif (isset($_GET['feed'])) {
     if (isset($_GET['action']) && $_GET['action'] == 'generate') {
         $poche->generateToken();
@@ -112,6 +121,7 @@ if (Session::isLogged()) {
 } else {
     $tpl_file = Tools::getTplFile('login');
     $tpl_vars['http_auth'] = 0;
+    Session::logout();
 }
 
 # because messages can be added in $poche->action(), we have to add this entry now (we can add it before)

@@ -1,0 +1,8 @@
+#!/bin/bash
+
+db_user=wallabag
+db_name=wallabag
+root_pwd=$(sudo cat /etc/yunohost/mysql)
+user=$1
+
+#mysql -u root -p$root_pwd $db_name -e "INSERT INTO users ()

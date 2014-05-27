@@ -1,9 +1,9 @@
 <?php
 /**
- * poche, a read it later open source system
+ * wallabag, self hostable application allowing you to not miss any content anymore
  *
- * @category   poche
- * @author     Nicolas Lœuillet <support@inthepoche.com>
+ * @category   wallabag
+ * @author     Nicolas Lœuillet <nicolas@loeuillet.org>
  * @copyright  2013
  * @license    http://www.wtfpl.net/ see COPYING file
  */
@@ -29,6 +29,8 @@ require_once INCLUDES . '/3rdparty/libraries/feedwriter/FeedItem.php';
 require_once INCLUDES . '/3rdparty/libraries/feedwriter/FeedWriter.php';
 require_once INCLUDES . '/3rdparty/FlattrItem.class.php';
 
+require_once INCLUDES . '/3rdparty/htmlpurifier/HTMLPurifier.auto.php';
+
 # Composer its autoloader for automatically loading Twig
 if (! file_exists(ROOT . '/vendor/autoload.php')) {
     Poche::$canRenderTemplates = false;
@@ -36,7 +38,7 @@ if (! file_exists(ROOT . '/vendor/autoload.php')) {
     require_once ROOT . '/vendor/autoload.php';
 }
 
-# system configuration; database credentials et cetera
+# system configuration; database credentials et caetera
 if (! file_exists(INCLUDES . '/poche/config.inc.php')) {
     Poche::$configFileAvailable = false;
 } else {

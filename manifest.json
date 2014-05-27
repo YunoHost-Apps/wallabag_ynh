@@ -1,13 +1,13 @@
 {
-    "name": "Poche",
-    "id": "poche",
+    "name": "Wallabag",
+    "id": "wallabag",
     "description": {
         "en": "a self hostable read-it-later app"
     },
     "developer": {
         "name": "beudbeud",
         "email": "beudbeud@beudibox.fr",
-        "url": "http://www.inthepoche.com/"
+        "url": "http://www.inthewallabag.com/"
     },
     "multi_instance": "true",
     "arguments": {
@@ -15,17 +15,17 @@
             {
                 "name": "domain",
                 "ask": {
-                    "en": "Choose a domain for Poche"
+                    "en": "Choose a domain for Wallabag"
                 },
                 "example": "domain.org"
             },
             {
                 "name": "path",
                 "ask": {
-                    "en": "Choose a path for Poche"
+                    "en": "Choose a path for Wallabag"
                 },
-                "example": "/poche",
-                "default": "/poche"
+                "example": "/wallabag",
+                "default": "/wallabag"
             }
         ]
     }

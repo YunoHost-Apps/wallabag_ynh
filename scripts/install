@@ -5,7 +5,7 @@ domain=$1
 path=$2
 
 # Check domain/path availability
-sudo yunohost app checkurl $domain$path -a poche
+sudo yunohost app checkurl $domain$path -a wallabag
 if [[ ! $? -eq 0 ]]; then
 exit 1
 fi
@@ -13,27 +13,27 @@ fi
 # Generate random password
 db_pwd=$(dd if=/dev/urandom bs=1 count=200 2> /dev/null | tr -c -d '[A-Za-z0-9]' | sed -n 's/\(.\{24\}\).*/\1/p')
 
-# Use 'poche' as database name and user
-db_user=poche
+# Use 'wallabag' as database name and user
+db_user=wallabag
 
 # Initialize database and store mysql password for upgrade
 sudo yunohost app initdb $db_user -p $db_pwd -s $(readlink -e ../sources/instalL/mysql.sql)
-sudo yunohost app setting poche mysqlpwd -v $db_pwd
+sudo yunohost app setting wallabag mysqlpwd -v $db_pwd
 
 # Copy files to the right place
-final_path=/var/www/poche
+final_path=/var/www/wallabag
 sudo mkdir -p $final_path
 sudo cp -a ../sources/* $final_path
-sudo unzip vendor.zip -d $final_path
+sudo unzip ../sources/vendor.zip -d $final_path
 
 # Set permissions to roundcube directory
 sudo chown -R www-data: $final_path
 
 # Configuration
-sudo cp ../conf/config.inc.php $final_path/inc/poche/
-sudo sed -i "s/yunouser/$db_user/g" $final_path/inc/poche/config.inc.php
-sudo sed -i "s/yunopass/$db_pwd/g" $final_path/inc/poche/config.inc.php
-sudo sed -i "s/yunobase/$db_user/g" $final_path/inc/poche/config.inc.php
+sudo cp ../conf/config.inc.php $final_path/inc/wallabag/
+sudo sed -i "s/yunouser/$db_user/g" $final_path/inc/wallabag/config.inc.php
+sudo sed -i "s/yunopass/$db_pwd/g" $final_path/inc/wallabag/config.inc.php
+sudo sed -i "s/yunobase/$db_user/g" $final_path/inc/wallabag/config.inc.php
 j=$(dd if=/dev/urandom bs=1 count=200 2> /dev/null | tr -c -d '[A-Za-z0-9]' | sed -n 's/\(.\{40\}\).*/\1/p')
 sudo sed -i "s/KEY1/$j/g" $final_path/
 sudo rm -Rf $final_path/install
@@ -41,7 +41,7 @@ sudo rm -Rf $final_path/install
 # Modify Nginx configuration file and copy it to Nginx conf directory
 sed -i "s@PATHTOCHANGE@$path@g" ../conf/nginx.conf*
 sed -i "s@ALIASTOCHANGE@$final_path/@g" ../conf/nginx.conf*
-sudo cp ../conf/nginx.conf /etc/nginx/conf.d/$domain.d/poche.conf
+sudo cp ../conf/nginx.conf /etc/nginx/conf.d/$domain.d/wallabag.conf
 
 # Reload Nginx and regenerate SSOwat conf
 sudo service nginx reload

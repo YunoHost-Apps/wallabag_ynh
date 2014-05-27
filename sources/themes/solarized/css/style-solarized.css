@@ -42,7 +42,8 @@ body,
 body,
 a,
 a:hover,
-a:visited {
+a:visited,
+td {
     color: #657b83;
 }
 
@@ -216,4 +217,16 @@ a.link span {
 
 a.bad-display span {
     background-image: url('../img/solarized/bad-display.png');
+}
+
+.arrow-down {
+    width: 0px;
+    height: 0px;
+    border-style: solid;
+    border-width: 10px 10px 0 10px;
+    border-color: #93A1A1 transparent transparent transparent;
+
+    position: absolute;
+    margin-top: 1.5em;
+    margin-left: -30px;
 }

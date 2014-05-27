@@ -1,9 +1,9 @@
 <?php
 /**
- * poche, a read it later open source system
+ * wallabag, self hostable application allowing you to not miss any content anymore
  *
- * @category   poche
- * @author     Nicolas Lœuillet <support@inthepoche.com>
+ * @category   wallabag
+ * @author     Nicolas Lœuillet <nicolas@loeuillet.org>
  * @copyright  2013
  * @license    http://www.wtfpl.net/ see COPYING file
  */
@@ -84,12 +84,12 @@ function create_assets_directory($id)
 {
     $assets_path = ABS_PATH;
     if(!is_dir($assets_path)) {
-        mkdir($assets_path, 0705);
+        mkdir($assets_path, 0715);
     }
 
     $article_directory = $assets_path . $id;
     if(!is_dir($article_directory)) {
-        mkdir($article_directory, 0705);
+        mkdir($article_directory, 0715);
     }
 
     return $article_directory;
