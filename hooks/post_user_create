@@ -3,6 +3,7 @@
 db_user=wallabag
 db_name=wallabag
 root_pwd=$(sudo cat /etc/yunohost/mysql)
+passwd="64faf5d0b1dc311fd0f94af64f6c296a03045571"
 user=$1
 
-#mysql -u root -p$root_pwd $db_name -e "INSERT INTO users ()
+#mysql -u root -p$root_pwd $db_name -e "insert into users (id,username,password,name,email) values ('','$user','$passwd','$user','');"
