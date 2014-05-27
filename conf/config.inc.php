@@ -1,11 +1,11 @@
 <?php
 /**
- * poche, a read it later open source system
+ * wallabag, self hostable application allowing you to not miss any content anymore
  *
- * @category poche
- * @author Nicolas Lœuillet <support@inthepoche.com>
- * @copyright 2013
- * @license http://www.wtfpl.net/ see COPYING file
+ * @category   wallabag
+ * @author     Nicolas Lœuillet <nicolas@loeuillet.org>
+ * @copyright  2013
+ * @license    http://www.wtfpl.net/ see COPYING file
  */
 
 define ('SALT', 'KEY1'); # put a strong string here
@@ -26,7 +26,7 @@ define ('STORAGE_PASSWORD', 'yunopass');
 #################################################################################
 
 // Change this if not using the standart port for SSL - i.e you server is behind sslh
-define ('SSL_PORT', 443);
+define ('SSL_PORT', 443); 
 
 define ('MODE_DEMO', FALSE);
 define ('DEBUG_POCHE', FALSE);
@@ -44,7 +44,7 @@ define ('FLATTRABLE', '1');
 define ('FLATTRED', '2');
 define ('ABS_PATH', 'assets/');
 
-define ('DEFAULT_THEME', 'default');
+define ('DEFAULT_THEME', 'baggy');
 
 define ('THEME', ROOT . '/themes');
 define ('LOCALE', ROOT . '/locale');
@@ -52,10 +52,8 @@ define ('CACHE', ROOT . '/cache');
 
 define ('PAGINATION', '10');
 
-define ('POCKET_FILE', '/ril_export.html');
-define ('READABILITY_FILE', '/readability');
-define ('INSTAPAPER_FILE', '/instapaper-export.html');
+//limit for download of articles during import
+define ('IMPORT_LIMIT', 5);
+//delay between downloads (in sec)
+define ('IMPORT_DELAY', 5);
 
-define ('IMPORT_POCKET_FILE', ROOT . POCKET_FILE);
-define ('IMPORT_READABILITY_FILE', ROOT . READABILITY_FILE);
-define ('IMPORT_INSTAPAPER_FILE', ROOT . INSTAPAPER_FILE);
