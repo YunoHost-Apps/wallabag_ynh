@@ -3,7 +3,7 @@
 db_user=wallabag
 db_name=wallabag
 root_pwd=$(sudo cat /etc/yunohost/mysql)
-passwd="64faf5d0b1dc311fd0f94af64f6c296a03045571"
+passwd=$(dd if=/dev/urandom bs=1 count=200 2> /dev/null | tr -c -d 'A-Za-z0-9' | sed -n 's/\(.\{40\}\).*/\1/p')
 user=$1
 mysql -u root -p$root_pwd $db_name -e "select MAX(id) from users INTO OUTFILE '/tmp/useridwallabag';"
 id=$(cat /tmp/useridwallabag)
