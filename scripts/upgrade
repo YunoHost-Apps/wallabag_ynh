@@ -1,3 +1,24 @@
 #!/bin/bash
 
-#TODO
+# Retrieve arguments
+domain=$(sudo yunohost app setting wallabag domain)
+path=$(sudo yunohost app setting wallabag path)
+
+# Copy files to the right place
+final_path=/var/www/wallabag
+sudo mkdir -p $final_path
+sudo cp -a ../sources/* $final_path
+sudo unzip ../sources/vendor.zip -d $final_path
+
+# Set permissions to roundcube directory
+sudo chown -R www-data: $final_path
+
+# Configuration
+sudo rm -Rf $final_path/install
+
+# Modify Nginx configuration file and copy it to Nginx conf directory
+sed -i "s@PATHTOCHANGE@$path@g" ../conf/nginx.conf*
+sed -i "s@ALIASTOCHANGE@$final_path/@g" ../conf/nginx.conf*
+sudo cp ../conf/nginx.conf /etc/nginx/conf.d/$domain.d/wallabag.conf
+
+
