@@ -8,7 +8,10 @@ path=$(sudo yunohost app setting wallabag path)
 final_path=/var/www/wallabag
 sudo mkdir -p $final_path
 sudo cp -a ../sources/* $final_path
-sudo unzip ../sources/vendor.zip -d $final_path
+if [ ! -d $final_path/vendor ];
+then
+  sudo unzip ../sources/vendor.zip -d $final_path
+fi
 
 # Set permissions to roundcube directory
 sudo chown -R www-data: $final_path
