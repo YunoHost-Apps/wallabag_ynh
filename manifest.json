@@ -16,6 +16,7 @@
                 "name": "domain",
                 "ask": {
                     "en": "Choose a domain for Wallabag"
+                    "fr": "Choisissez un domaine pour Wallabag"
                 },
                 "example": "domain.org"
             },
@@ -23,6 +24,7 @@
                 "name": "path",
                 "ask": {
                     "en": "Choose a path for Wallabag"
+                    "fr": "Choisissez un chemin pour Wallabag"
                 },
                 "example": "/wallabag",
                 "default": "/wallabag"
