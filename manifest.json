@@ -2,7 +2,8 @@
     "name": "Wallabag",
     "id": "wallabag",
     "description": {
-        "en": "a self hostable read-it-later app"
+        "en": "A self hostable read-it-later app",
+        "fr": "Une application de lecture-plus-tard auto-hébergeable" 
     },
     "developer": {
         "name": "beudbeud",
@@ -15,7 +16,7 @@
             {
                 "name": "domain",
                 "ask": {
-                    "en": "Choose a domain for Wallabag"
+                    "en": "Choose a domain for Wallabag",
                     "fr": "Choisissez un domaine pour Wallabag"
                 },
                 "example": "domain.org"
@@ -23,7 +24,7 @@
             {
                 "name": "path",
                 "ask": {
-                    "en": "Choose a path for Wallabag"
+                    "en": "Choose a path for Wallabag",
                     "fr": "Choisissez un chemin pour Wallabag"
                 },
                 "example": "/wallabag",
