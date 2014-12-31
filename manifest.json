@@ -5,7 +5,6 @@
         "en": "A self hostable read-it-later app",
         "fr": "Une application de lecture-plus-tard auto-hébergeable" 
     },
-    "licence": "WTFPL-2",
     "developer": {
         "name": "beudbeud",
         "email": "beudbeud@beudibox.fr",
