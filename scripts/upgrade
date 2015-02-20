@@ -18,6 +18,7 @@ sudo chown -R www-data: $final_path
 
 # Configuration
 sudo rm -Rf $final_path/install
+sudo rm -Rf $final_path/cache/*
 
 # Modify Nginx configuration file and copy it to Nginx conf directory
 sed -i "s@PATHTOCHANGE@$path@g" ../conf/nginx.conf*
