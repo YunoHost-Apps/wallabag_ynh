@@ -11,6 +11,12 @@
         "email": "beudbeud@beudibox.fr"
     },
     "multi_instance": "true",
+    "services": [
+        "nginx",
+        "php5-fpm",
+        "mysql",
+        "slapd"
+    ],
     "arguments": {
         "install" : [
             {
