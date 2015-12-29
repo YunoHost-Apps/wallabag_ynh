@@ -57,7 +57,7 @@ do
 done
 
 # Enable api for client
-# sudo yunohost app setting wallabag skipped_regex -v "^\/wallabag\/?(.*)feed=true"
+sudo yunohost app setting wallabag unprotected_uris -v "/"
 
 # Reload Nginx and regenerate SSOwat conf
 sudo service nginx reload
