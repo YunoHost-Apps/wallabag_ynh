@@ -1,6 +1,7 @@
 {
     "name": "Wallabag",
     "id": "wallabag",
+    "packaging_format": 1,
     "description": {
         "en": "A self hostable read-it-later app",
         "fr": "Une application de lecture-plus-tard auto-hébergeable" 
