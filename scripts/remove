@@ -1,10 +1,15 @@
 #!/bin/bash
 
-db_user=wallabag
-db_name=wallabag
-root_pwd=$(sudo cat /etc/yunohost/mysql)
-domain=$(sudo yunohost app setting wallabag domain)
+# Retrieve arguments
+app=${!#}
 
-mysql -u root -p$root_pwd -e "DROP DATABASE $db_name ; DROP USER $db_user@localhost ;"
-sudo rm -rf /var/www/wallabag
-sudo rm -f /etc/nginx/conf.d/$domain.d/wallabag.conf
+# Set app specific variables
+dbname=$app
+dbuser=$app
+
+root_pwd=$(sudo cat /etc/yunohost/mysql)
+domain=$(sudo yunohost app setting $app domain)
+
+mysql -u root -p$root_pwd -e "DROP DATABASE $dbname ; DROP USER $dbuser@localhost ;"
+sudo rm -rf /var/www/$app
+sudo rm -f /etc/nginx/conf.d/$domain.d/$app.conf
