@@ -3,13 +3,23 @@
 # Retrieve arguments
 app=${!#}
 
+# Load common variables and helpers
+source ./_common.sh
+
 # Set app specific variables
 dbname=$app
 dbuser=$app
 
-root_pwd=$(sudo cat /etc/yunohost/mysql)
-domain=$(sudo yunohost app setting $app domain)
+# Drop MySQL database and user
+ynh_mysql_drop_db $dbname || true
+ynh_mysql_drop_user $dbuser || true
 
-mysql -u root -p$root_pwd -e "DROP DATABASE $dbname ; DROP USER $dbuser@localhost ;"
-sudo rm -rf /var/www/$app
-sudo rm -f /etc/nginx/conf.d/$domain.d/$app.conf
+# Retrieve domain from app settings
+domain=$(ynh_app_setting_get $app domain)
+
+# Delete app directory and configurations
+sudo rm -rf "/var/www/${app}"
+[[ -n $domain ]] && sudo rm -f "/etc/nginx/conf.d/${domain}.d/${app}.conf"
+
+# Reload services
+sudo service nginx reload || true
