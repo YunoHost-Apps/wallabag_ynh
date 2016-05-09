@@ -1,11 +1,13 @@
 {
+    "packaging_format": 1,
     "name": "Wallabag",
     "id": "wallabag",
     "description": {
         "en": "A self hostable read-it-later app",
         "fr": "Une application de lecture-plus-tard auto-hébergeable"
     },
-    "url": "http://www.wallabag.org",
+    "url": "https://www.wallabag.org",
+    "license": "MIT",
     "maintainer": {
         "name": "beudbeud",
         "email": "beudbeud@beudibox.fr"
