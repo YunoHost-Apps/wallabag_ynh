@@ -72,6 +72,9 @@ EOF
     ((user_id++))
 done
 
+# Set app name in hooks
+sed -i "s@#APP#@${app}@g" ../hooks/post_user_create
+
 # Save app settings
 ynh_app_setting_set "$app" mysqlpwd "$dbpass"
 

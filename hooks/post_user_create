@@ -1,17 +1,35 @@
 #!/bin/bash
 
-db_user=wallabag
-db_name=wallabag
-root_pwd=$(sudo cat /etc/yunohost/mysql)
-passwd=$(dd if=/dev/urandom bs=1 count=200 2> /dev/null | tr -c -d 'A-Za-z0-9' | sed -n 's/\(.\{40\}\).*/\1/p')
-user=$1
-mysql -u root -p$root_pwd $db_name -e "select MAX(id) from users INTO OUTFILE '/tmp/useridwallabag';"
-id=$(cat /tmp/useridwallabag)
+set -e
 
-mysql -u root -p$root_pwd $db_name -e "insert into users (id,username,password,name,email) values ('','$user','$passwd','$user','');"
-mysql -u root -p$root_pwd $db_name -e "insert into users_config (id,user_id,name,value) values ('','$id','pager','10');"
-mysql -u root -p$root_pwd $db_name -e "insert into users_config (id,user_id,name,value) values ('','$id','language','en_EN.utf8');"
-mysql -u root -p$root_pwd $db_name -e "insert into users_config (id,user_id,name,value) values ('','$id','theme','baggy');"
+# Retrieve arguments
+username=$1
 
-sudo rm /tmp/useridwallabag
+# Source app helpers
+source /usr/share/yunohost/helpers
 
+# Set app specific variables
+# TODO: Use real db user and pass, impossible due to the lock
+app=#APP#
+dbname=$app
+dbuser=root
+dbpass=$(sudo cat /etc/yunohost/mysql)
+
+_query() {
+    mysql -B -s -r -u "$dbuser" --password="$dbpass" "$dbname" <<< "$1"
+}
+
+# Calculate user id and random password
+last_id=$(_query "SELECT id FROM users ORDER BY id DESC LIMIT 1")
+user_id=$((last_id + 1))
+user_pass=$(ynh_string_random)
+
+# Create new user entry
+ynh_mysql_connect_as "$dbuser" "$dbpass" "$dbname" << EOF
+INSERT INTO users (id,username,password,name,email)
+  VALUES ('${user_id}','${username}','${user_pass}','${username}','');
+INSERT INTO users_config (user_id,name,value)
+  VALUES ('${user_id}','language','en_EN.utf8');
+INSERT INTO users_config (user_id,name,value)
+  VALUES ('${user_id}','pager','10');
+EOF
