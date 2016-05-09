@@ -24,10 +24,6 @@ or from the Web administration:
   * Scroll to the bottom of the page and put `https://github.com/YunoHost-Apps/wallabag_ynh/tree/testing`
     under **Install custom app**.
 
-## TODO ##
-
- * Add `backup` and `restore` scripts
-
 ## Links ##
 
 **Wallabag**: https://www.wallabag.org/

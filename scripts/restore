@@ -1,0 +1,47 @@
+#!/bin/bash
+
+# Retrieve arguments
+backup_dir=$1
+app=$2
+
+# Set app specific variables
+dbname=$app
+dbuser=$app
+
+# Source app helpers
+. /usr/share/yunohost/helpers
+
+# Retrieve old app settings
+domain=$(ynh_app_setting_get "$app" domain)
+path=$(ynh_app_setting_get "$app" path)
+dbpass=$(ynh_app_setting_get "$app" mysqlpwd)
+
+# Check domain/path availability
+sudo yunohost app checkurl "${domain}${path}" -a "$app" \
+  || exit 1
+
+# Check destination directory
+DESTDIR="/var/www/$app"
+[[ -d $DESTDIR ]] && ynh_die \
+"The destination directory '$DESTDIR' already exists.\
+ You should safely delete it before restoring this app."
+
+# Check configuration files
+nginx_conf="/etc/nginx/conf.d/${domain}.d/${app}.conf"
+[[ -f $nginx_conf ]] && ynh_die \
+"The NGINX configuration already exists at '${nginx_conf}'.
+ You should safely delete it before restoring this app."
+
+# Restore the app files and set permissions
+sudo cp -a ./sources "$DESTDIR"
+sudo chown -R www-data: "$DESTDIR"
+
+# Create and restore the database
+ynh_mysql_create_db "$dbname" "$dbuser" "$dbpass"
+ynh_mysql_connect_as "$dbuser" "$dbpass" "$dbname" < ./dump.sql
+
+# Restore configuration files
+sudo cp -a ./nginx.conf   "$nginx_conf"
+
+# Reload services
+sudo service nginx reload || true
