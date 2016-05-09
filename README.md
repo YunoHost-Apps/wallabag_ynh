@@ -26,7 +26,6 @@ or from the Web administration:
 
 ## TODO ##
 
- * Update the `upgrade` script and test upgrading from current official app
  * Add `backup` and `restore` scripts
 
 ## Links ##
