@@ -59,8 +59,8 @@ sudo rm -rf "${DESTDIR}/install"
 
 # Copy and set nginx configuration
 nginx_conf="/etc/nginx/conf.d/${domain}.d/${app}.conf"
-sed -i "s@PATHTOCHANGE@${path}@g"      ../conf/nginx.conf
-sed -i "s@ALIASTOCHANGE@${DESTDIR}/@g" ../conf/nginx.conf
+sed -i "s@#LOCATION#@${path:-/}@g" ../conf/nginx.conf
+sed -i "s@#DESTDIR#@${DESTDIR}@g"  ../conf/nginx.conf
 sudo cp ../conf/nginx.conf "$nginx_conf"
 
 # Set app name in hooks

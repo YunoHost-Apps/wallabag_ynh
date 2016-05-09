@@ -4,7 +4,7 @@ set -e
 
 # Retrieve arguments
 domain=$1
-path=$2
+path=${2%/}
 app=${!#}
 
 # Load common variables and helpers
@@ -53,8 +53,8 @@ sudo chown -R www-data: "$DESTDIR"
 # Copy and set nginx configuration
 # TODO: Check path variable
 nginx_conf="/etc/nginx/conf.d/${domain}.d/${app}.conf"
-sed -i "s@PATHTOCHANGE@${path}@g"      ../conf/nginx.conf
-sed -i "s@ALIASTOCHANGE@${DESTDIR}/@g" ../conf/nginx.conf
+sed -i "s@#LOCATION#@${path:-/}@g" ../conf/nginx.conf
+sed -i "s@#DESTDIR#@${DESTDIR}@g"  ../conf/nginx.conf
 sudo cp ../conf/nginx.conf "$nginx_conf"
 
 # Add users to Wallabag
