@@ -8,7 +8,7 @@
  * @license    http://www.wtfpl.net/ see COPYING file
  */
 
-define ('SALT', 'KEY1'); # put a strong string here
+define ('SALT', '#DESKEY#'); # put a strong string here
 define ('LANG', 'en_EN.utf8');
 
 define ('STORAGE', 'mysql'); # postgres, mysql or sqlite
@@ -17,9 +17,9 @@ define ('STORAGE_SQLITE', ROOT . '/db/poche.sqlite'); # if you are using sqlite,
 
 # only for postgres & mysql
 define ('STORAGE_SERVER', 'localhost');
-define ('STORAGE_DB', 'yunobase');
-define ('STORAGE_USER', 'yunouser');
-define ('STORAGE_PASSWORD', 'yunopass');
+define ('STORAGE_DB', '#DBNAME#');
+define ('STORAGE_USER', '#DBUSER#');
+define ('STORAGE_PASSWORD', '#DBPASS#');
 
 #################################################################################
 # Do not trespass unless you know what you are doing
