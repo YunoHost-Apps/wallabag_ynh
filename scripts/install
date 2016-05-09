@@ -58,12 +58,18 @@ sed -i "s@ALIASTOCHANGE@${DESTDIR}/@g" ../conf/nginx.conf
 sudo cp ../conf/nginx.conf "$nginx_conf"
 
 # Add users to Wallabag
+user_id=1
 for username in $(ynh_user_list); do
     user_pass=$(ynh_string_random)
     ynh_mysql_connect_as $dbuser $dbpass $dbname << EOF
 INSERT INTO users (id,username,password,name,email)
-  VALUES ('','${user}','${user_pass}','${user}','');
+  VALUES (${user_id},'${username}','${user_pass}','${username}','');
+INSERT INTO users_config (user_id,name,value)
+  VALUES ('${user_id}','language','en_EN.utf8');
+INSERT INTO users_config (user_id,name,value)
+  VALUES ('${user_id}','pager','10');
 EOF
+    ((user_id++))
 done
 
 # Save app settings
