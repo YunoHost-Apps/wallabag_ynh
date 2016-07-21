@@ -22,6 +22,8 @@ As the upgrade to Wallabag 2 need a manual intervention - see the
 a new separate package will be made for this version. If you want to do it or
 help, you're welcome!
 
+Looking for Wallabag **v2** for Yunohost ? It's a separate app located in [this repository]().
+
 ## Links
 
 **Wallabag**: https://www.wallabag.org/
