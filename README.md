@@ -7,6 +7,8 @@ Wallabag v1 for Yunohost
 you to not miss any content anymore. Click, save, read it when you can. It
 extracts content so that you can read it when you have time.
 
+Note: Wallabag 1.x versions are no longer developed, has the project went to 2.x version.
+
 ## Limitation
 
 This application does not connect to the LDAP, which is needed to retrieve
