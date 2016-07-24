@@ -17,13 +17,16 @@ will work as long as you're connected to the SSO.
 
 ## Future...
 
-As the upgrade to Wallabag 2 need a manual intervention - see the
+The new version 2 of Wallabag with many new features is out!
+As the upgrade from v1 to v2 need a manual intervention - see the
 [migration guide](http://doc.wallabag.org/en/master/user/migration.html),
-a new separate package will be made for this version. If you want to do it or
-help, you're welcome!
+a new YunoHost package has been made for it. You should consider to use it for
+all new installations. For more information, please refer to it
+[here](https://github.com/YunoHost-Apps/wallabag2_ynh).
 
 ## Links
 
-**Wallabag**: https://www.wallabag.org/
-
-**YunoHost**: https://yunohost.org/
+ * Report a bug: https://dev.yunohost.org/projects/apps/issues
+ * Wallabag website: https://www.wallabag.org/
+ * YunoHost website: https://yunohost.org/
+ * YunoHost package for Wallabag v2: https://github.com/YunoHost-Apps/wallabag2_ynh
