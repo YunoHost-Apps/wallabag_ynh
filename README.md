@@ -24,6 +24,8 @@ a new YunoHost package has been made for it. You should consider to use it for
 all new installations. For more information, please refer to it
 [here](https://github.com/YunoHost-Apps/wallabag2_ynh).
 
+Looking for Wallabag **v2** for Yunohost ? It's a separate app located in [this repository]().
+
 ## Links
 
  * Report a bug: https://dev.yunohost.org/projects/apps/issues
