@@ -26,7 +26,6 @@ all new installations. For more information, please refer to it
 
 ## Links
 
- * Report a bug: https://dev.yunohost.org/projects/apps/issues
  * Wallabag website: https://www.wallabag.org/
  * YunoHost website: https://yunohost.org/
  * YunoHost package for Wallabag v2: https://github.com/YunoHost-Apps/wallabag2_ynh
