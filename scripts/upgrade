@@ -5,6 +5,9 @@ set -u
 # Load common variables and helpers
 . ./_common.sh
 
+# INSTALL DEPENDENCIES
+ynh_install_app_dependencies "$PKG_DEPENDENCIES"
+
 # Set app specific variables
 app=${!#}
 dbname=$app

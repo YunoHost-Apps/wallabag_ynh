@@ -6,6 +6,8 @@ app=${!#}
 # Load common variables and helpers
 source ./_common.sh
 
+ynh_remove_app_dependencies
+
 # Set app specific variables
 dbname=$app
 dbuser=$app

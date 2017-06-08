@@ -11,6 +11,9 @@ dbuser=$app
 # Source app helpers
 . /usr/share/yunohost/helpers
 
+# INSTALL DEPENDENCIES
+ynh_install_app_dependencies "$PKG_DEPENDENCIES"
+
 # Retrieve old app settings
 domain=$(ynh_app_setting_get "$app" domain)
 path=$(ynh_app_setting_get "$app" path)
