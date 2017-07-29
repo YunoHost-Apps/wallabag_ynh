@@ -10,6 +10,9 @@ app=${!#}
 # Load common variables and helpers
 source ./_common.sh
 
+# INSTALL DEPENDENCIES
+ynh_install_app_dependencies "$PKG_DEPENDENCIES"
+
 # Set app specific variables
 dbname=$app
 dbuser=$app
